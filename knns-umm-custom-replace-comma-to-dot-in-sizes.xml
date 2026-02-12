@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+  <id><![CDATA[Replace comma with dot inside #size# output values]]></id>
+  <name><![CDATA[Replace comma with dot inside #size# output values]]></name>
+	<code>knns_umm_custom_replace_comma_to_dot_in_sizes</code>
+	<version>1.0</version>
+	<author><![CDATA[<font color="#7F458C"><b>kanenas.net (aka Nikolas Branis)</b></font> - nbran@kanenas.net]]></author>
+	<link>https://kanenas.net/</link>
+    <file path="catalog/controller/extension/feed/custom.php">
+        <!-- Operation 1: Fix size values sourced from attributes/filters -->
+        <operation>
+            <search><![CDATA[$variant_info['size'] = array_filter(array_unique($variant_info['size']));]]></search>
+            <add position="replace"><![CDATA[$variant_info['size'] = array_map(function($v) { return str_replace(',', '.', $v); }, array_filter(array_unique($variant_info['size'])));]]></add>
+        </operation>
+        <!-- Operation 2: Fix option names collected as size in replaceProductOption -->
+        <operation>
+            <search><![CDATA[$size[] = $option['option'][$key]['name'];]]></search>
+            <add position="replace"><![CDATA[$size[] = str_replace(',', '.', $option['option'][$key]['name']);]]></add>
+        </operation>
+        <!-- Operation 3: Fix option names used as size in replaceProductSubList inner loop (variation level) -->
+        <operation>
+            <search><![CDATA[$sub_extra_options[$option_id] = $val;]]></search>
+            <add position="before"><![CDATA[if ($sub_type == 'size') { $val = str_replace(',', '.', $val); }]]></add>
+        </operation>
+        <!-- Operation 4: Fix option names used as size in replaceProductSubList outer loop (product level) -->
+        <operation>
+            <search><![CDATA[$extra_options[$option_id] = $val;]]></search>
+            <add position="before"><![CDATA[if ($type == 'size') { $val = str_replace(',', '.', $val); }]]></add>
+        </operation>
+    </file>
+</modification>
